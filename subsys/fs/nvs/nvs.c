@@ -290,6 +290,9 @@ static int nvs_flash_erase_sector(struct nvs_fs *fs, uint32_t addr)
 {
 	int rc;
 	off_t offset;
+        size_t ate_size;
+
+	ate_size = nvs_al_size(fs, sizeof(struct nvs_ate));
 
 	addr &= ADDR_SECT_MASK;
 
@@ -302,14 +305,17 @@ static int nvs_flash_erase_sector(struct nvs_fs *fs, uint32_t addr)
 #ifdef CONFIG_NVS_LOOKUP_CACHE
 	nvs_lookup_cache_invalidate(fs, addr >> ADDR_SECT_SHIFT);
 #endif
-	rc = flash_erase(fs->flash_device, offset, fs->sector_size);
+	/* Only erase last two ate of a sector as it contains the open/close
+	 * sector ate and the gc_done ate
+	 */
+	rc = flash_erase(fs->flash_device, offset, 2 * ate_size);
 
 	if (rc) {
 		return rc;
 	}
 
 	if (nvs_flash_cmp_const(fs, addr, fs->flash_parameters->erase_value,
-			fs->sector_size)) {
+			2 * ate_size)) {
 		rc = -ENXIO;
 	}
 
@@ -417,6 +423,13 @@ static int nvs_flash_wrt_entry(struct nvs_fs *fs, uint16_t id, const void *data,
 		return rc;
 	}
 	rc = nvs_flash_ate_wrt(fs, &entry);
+	if (rc) {
+		return rc;
+	}
+
+	/* delete the next entry to allow detection of the end of file system */
+	rc = flash_erase(fs->flash_device, fs->offset, 2 * ate_size);
+
 	if (rc) {
 		return rc;
 	}
