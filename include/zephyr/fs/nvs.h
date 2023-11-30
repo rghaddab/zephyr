@@ -49,6 +49,8 @@ struct nvs_fs {
 	uint16_t sector_size;
 	/** Number of sectors in the file system */
 	uint16_t sector_count;
+	/** Key value of the sector */
+	uint32_t sector_key;
 	/** Flag indicating if the file system is initialized */
 	bool ready;
 	/** Mutex */

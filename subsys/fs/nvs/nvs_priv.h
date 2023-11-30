@@ -36,6 +36,7 @@ struct nvs_ate {
 	uint16_t offset;	/* data offset within sector */
 	uint16_t len;	/* data len within sector */
 	uint8_t part;	/* part of a multipart data - future extension */
+	uint16_t key;   /* holds the identification key of a sector */
 	uint8_t crc8;	/* crc8 check of the entry */
 } __packed;
 
