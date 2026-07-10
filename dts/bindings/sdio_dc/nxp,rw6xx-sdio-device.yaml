@@ -1,0 +1,38 @@
+# Copyright 2026 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  NXP RW6xx SDIO device controller (slave side), exposed through the
+  role-neutral SDIO device-controller class, backed by the sdio_dev mcux
+  component (fsl_adapter_sdu) from hal_nxp.
+
+compatible: "nxp,rw6xx-sdio-device"
+
+include: base.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  num-functions:
+    type: int
+    default: 1
+    description: Number of I/O functions exposed to the host (1-7).
+
+  max-block-size:
+    type: int
+    default: 512
+    description: Maximum block size for block-mode transfers.
+
+  cccr-addr:
+    type: int
+    default: 0
+    description: Base address of the Card Common Control Registers window.
+
+  data-port-reg:
+    type: int
+    default: 0
+    description: Register offset used as the streaming data port / FIFO.

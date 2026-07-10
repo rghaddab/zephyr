@@ -51,4 +51,36 @@ config SDIO_DEVICE
 	  exposes function I/O space, register windows and FIFOs to a remote
 	  SDIO host through an SDIO device controller (SDIO_DC).
 
+if SDIO_DEVICE
+
+config SDIO_DEVICE_STREAM
+	bool "SDIO device streaming (packet/poll) extension"
+	select POLL
+	help
+	  Optional pooled-packet data path with RX/TX FIFOs and a poll() wait,
+	  layered on top of an SDIO device function. Intended for high-throughput
+	  companion transports (Wi-Fi/BT). Adapted from the NXP sd_dev proposal.
+
+if SDIO_DEVICE_STREAM
+
+config SDIO_STREAM_PKT_COUNT
+	int "SDIO stream packet pool size"
+	default 8
+	help
+	  Number of packets (and data buffers) in each streaming pool.
+
+config SDIO_STREAM_BUF_SIZE
+	int "SDIO stream packet buffer size (bytes)"
+	default 2048
+
+config SDIO_STREAM_DMA_ALIGN
+	int "SDIO stream buffer alignment (bytes)"
+	default 4
+	help
+	  Alignment of stream packets and buffers, for DMA-capable controllers.
+
+endif # SDIO_DEVICE_STREAM
+
+endif # SDIO_DEVICE
+
 endif # SDIO
